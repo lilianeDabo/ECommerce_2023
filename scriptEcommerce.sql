@@ -37,7 +37,7 @@ PRIMARY KEY (email_Address)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Command ;
 CREATE TABLE Command (uid_Command BIGINT AUTO_INCREMENT NOT NULL,
-date_Command TIME,
+date_Command DATE,
 status_Command VARCHAR(9),
 shipping_info_Command TEXT,
 cart_uid_cart INT,
