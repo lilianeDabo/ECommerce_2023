@@ -69,7 +69,7 @@ for ($i=0; $i < 3; $i++) {
 }
 
 // CART
-$sql = 'INSERT INTO cart (content_Cart, command_uid_command) VALUES (?, ?)'; // Example command ID will be the first one
+$sql = 'INSERT INTO cart (content_Cart, uid_Command) VALUES (?, ?)'; // Example command ID will be the first one
 $stmt = $db->prepare($sql);
 
 $insertedPKs = array();
@@ -81,7 +81,7 @@ for ($i=0; $i < 3; $i++) {
 }
 
 // COMMAND Foreign key
-$sql = 'UPDATE command SET cart_uid_cart = (SELECT uid_cart FROM cart WHERE cart.command_uid_command = command.uid_Command LIMIT 1)';
+$sql = 'UPDATE command SET uid_Cart = (SELECT uid_cart FROM cart WHERE cart.uid_Command = command.uid_Command LIMIT 1)';
 $stmt = $db->prepare($sql);
 
 $insertedPKs = array();
@@ -91,18 +91,18 @@ $insertedPKs[]= $db->lastInsertId();
 // BOB
 /*
 for ($i=0; $i < 3; $i++) {
-  $sql = "SELECT command_uid_command FROM cart WHERE cart.uid_Cart = ?";
+  $sql = "SELECT uid_Command FROM cart WHERE cart.uid_Cart = ?";
     $stmt = $db->prepare($sql);
     $stmt->bindValue(1, $i );
     $stmt->execute();
     $carts = $stmt->fetchAll();
     //die (print_r($carts));
 
-    $sql = "UPDATE command SET cart_uid_cart = ? WHERE  uid_Command = ?";
+    $sql = "UPDATE command SET uid_Cart = ? WHERE  uid_Command = ?";
     $stmt = $db->prepare($sql);
     //die (print_r($carts));
     $stmt->bindValue(1, $i );
-    $stmt->bindValue(2, $carts[0]['command_uid_command'] ?? null );
+    $stmt->bindValue(2, $carts[0]['uid_Command'] ?? null );
     $stmt->execute();
     $insertedPKs[]= $db->lastInsertId();
 }*/
@@ -118,6 +118,8 @@ for ($i=0; $i < 3; $i++) {
     $stmt->execute();
     $insertedPKs[]= $db->lastInsertId();
 }
+
+
 
 // INVOICES
 $sql = 'INSERT INTO invoices (uid_Product, uid_Customer, quantity_Invoices) VALUES (?, ?, ?)';
@@ -148,19 +150,38 @@ $insertedPKs = array();
 $stmt->execute();
 $insertedPKs[]= $db->lastInsertId();
 
-// RATE
-$sql = 'INSERT INTO rate (user_uid, rating_Rate, review_Rate) VALUES (?, ?, ?)';
+// E_USE
+$sql = 'INSERT INTO e_use (uid_Customer) VALUES (?)';
 $stmt = $db->prepare($sql);
 
 $insertedPKs = array();
-for ($i=0; $i < 3; $i++) {
-    $stmt->bindValue(1, $faker->numberBetween(1, 3));
-    $stmt->bindValue(2, $faker->numberBetween(0, 5));
-    $stmt->bindValue(3, $faker->text(50));
+for ($i=1; $i <= 3; $i++) {
+    $stmt->bindValue(1, $i);
     $stmt->execute();
     $insertedPKs[]= $db->lastInsertId();
 }
 
+// E_USE Foreign keys
+$sql = 'UPDATE e_use SET uid_Product = (SELECT uid_Product FROM rate WHERE rate.uid_Customer = e_use.uid_Customer LIMIT 1)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+$stmt->execute();
+$insertedPKs[]= $db->lastInsertId();
+
+// RATE
+$sql = 'INSERT INTO rate (uid_Product, uid_Customer, rating_Rate, review_Rate) VALUES (?, ?, ?, ?)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+for ($i=1; $i <= 3; $i++) {
+    $stmt->bindValue(1, $faker->numberBetween(1, 3));
+    $stmt->bindValue(2, $i);
+    $stmt->bindValue(3, $faker->numberBetween(0, 5));
+    $stmt->bindValue(4, $faker->text(50));
+    $stmt->execute();
+    $insertedPKs[]= $db->lastInsertId();
+}
 
 // PHOTO
 $sql = 'INSERT INTO photo (product_img_Photo, avatar_img_Photo) VALUES (?, ?)';
@@ -232,6 +253,51 @@ for ($i=1; $i <= 3; $i++) {
 
 // STORE Foreign keys
 $sql = 'UPDATE store SET uid_Invoices = (SELECT uid_Command FROM command WHERE command.uid_Command = store.uid_Command)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+$stmt->execute();
+$insertedPKs[]= $db->lastInsertId();
+
+// FILL
+$sql = 'INSERT INTO fill (uid_Command) VALUES (?)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+for ($i=1; $i <= 3; $i++) {
+    $stmt->bindValue(1, $i);
+    $stmt->execute();
+    $insertedPKs[]= $db->lastInsertId();
+}
+
+// FILL Foreign keys
+$sql = 'UPDATE fill SET credit_cardNB_Payment = (SELECT credit_cardNB_Payment FROM payment WHERE payment.uid_Payment = fill.uid_Command)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+$stmt->execute();
+$insertedPKs[]= $db->lastInsertId();
+
+$sql = 'UPDATE fill SET email_Address = (SELECT email_Address FROM address WHERE address.uid_Address = fill.uid_Command)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+$stmt->execute();
+$insertedPKs[]= $db->lastInsertId();
+
+// E_CREATE
+$sql = 'INSERT INTO e_create (uid_Command) VALUES (?)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+for ($i=1; $i <= 3; $i++) {
+    $stmt->bindValue(1, $i);
+    $stmt->execute();
+    $insertedPKs[]= $db->lastInsertId();
+}
+
+// E_CREATE Foreign keys
+$sql = 'UPDATE e_create SET uid_Cart = (SELECT uid_Cart FROM cart WHERE cart.uid_Command = e_create.uid_Command LIMIT 1)';
 $stmt = $db->prepare($sql);
 
 $insertedPKs = array();

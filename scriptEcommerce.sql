@@ -5,7 +5,7 @@ CREATE DATABASE e_commerce;
 USE e_commerce;
 
 DROP TABLE IF EXISTS e_User ;
-CREATE TABLE e_User (uid_Customer INTEGER AUTO_INCREMENT NOT NULL,
+CREATE TABLE e_User (uid_Customer INT AUTO_INCREMENT NOT NULL,
 username_User VARCHAR(30),
 password_User TEXT,
 first_name_Customer VARCHAR(30),
@@ -24,7 +24,7 @@ PRIMARY KEY (uid_Product)) ENGINE=InnoDB;
 DROP TABLE IF EXISTS Cart ;
 CREATE TABLE Cart (uid_Cart INT AUTO_INCREMENT NOT NULL,
 content_Cart TEXT,
-command_uid_command BIGINT,
+uid_Command BIGINT,
 PRIMARY KEY (uid_Cart)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Address ;
@@ -32,7 +32,7 @@ CREATE TABLE Address (uid_Address INT AUTO_INCREMENT NOT NULL,
 email_Address VARCHAR(255) NOT NULL,
 phone_number_Address VARCHAR(11),
 address_Address TEXT,
-postal_code_Address INTEGER,
+postal_code_Address INT,
 city_Address TEXT,
 PRIMARY KEY (uid_Address,
 email_Address)) ENGINE=InnoDB;
@@ -42,7 +42,7 @@ CREATE TABLE Command (uid_Command BIGINT AUTO_INCREMENT NOT NULL,
 date_Command DATE,
 status_Command VARCHAR(9),
 shipping_info_Command TEXT,
-cart_uid_cart INT,
+uid_Cart INT,
 PRIMARY KEY (uid_Command)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Payment ;
@@ -57,17 +57,20 @@ CREATE TABLE Invoices (uid_Invoices INT AUTO_INCREMENT NOT NULL,
 uid_Product INT NOT NULL,
 name_Product VARCHAR(30),
 price_Product FLOAT,
-uid_Customer INTEGER,
+uid_Customer INT NOT NULL,
 quantity_Invoices INT,
 PRIMARY KEY (uid_Invoices,
 uid_Product)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Rate ;
-CREATE TABLE Rate (product_uid INT AUTO_INCREMENT NOT NULL,
-user_uid INT,
+CREATE TABLE Rate (uid_Rate INT AUTO_INCREMENT NOT NULL,
+uid_Product INT NOT NULL,
+uid_Customer INT NOT NULL,
 rating_Rate INT,
 review_Rate TEXT,
-PRIMARY KEY (product_uid)) ENGINE=InnoDB;
+PRIMARY KEY (uid_Rate,
+uid_Product,
+uid_Customer)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Photo ;
 CREATE TABLE Photo (product_img_Photo VARCHAR(255) NOT NULL,
@@ -75,7 +78,7 @@ avatar_img_Photo TEXT,
 PRIMARY KEY (product_img_Photo)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Choose ;
-CREATE TABLE Choose (uid_Customer INTEGER AUTO_INCREMENT NOT NULL,
+CREATE TABLE Choose (uid_Customer INT AUTO_INCREMENT NOT NULL,
 uid_Product INT NOT NULL,
 product_img_Photo VARCHAR(255) NOT NULL,
 PRIMARY KEY (uid_Customer,
@@ -83,7 +86,7 @@ PRIMARY KEY (uid_Customer,
  product_img_Photo)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Own ;
-CREATE TABLE Own (uid_Customer INTEGER AUTO_INCREMENT NOT NULL,
+CREATE TABLE Own (uid_Customer INT AUTO_INCREMENT NOT NULL,
 uid_Cart INT NOT NULL,
 email_Address VARCHAR(255) NOT NULL,
 credit_cardNB_Payment BIGINT NOT NULL,
@@ -99,23 +102,28 @@ PRIMARY KEY (uid_Command,
  uid_Invoices)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Fill ;
-CREATE TABLE Fill (credit_cardNB_Payment BIGINT NOT NULL,
-uid_Command BIGINT NOT NULL,
+CREATE TABLE Fill (uid_Command BIGINT NOT NULL,
+credit_cardNB_Payment BIGINT NOT NULL,
 email_Address VARCHAR(255) NOT NULL,
-PRIMARY KEY (credit_cardNB_Payment,
- uid_Command,
+PRIMARY KEY (uid_Command,
+ credit_cardNB_Payment,
  email_Address)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS e_Use ;
-CREATE TABLE e_Use (uid_Customer INTEGER AUTO_INCREMENT NOT NULL,
-product_uid INT NOT NULL,
+CREATE TABLE e_Use (uid_Customer INT AUTO_INCREMENT NOT NULL,
+uid_Rate INT NOT NULL,
 uid_Product INT NOT NULL,
 PRIMARY KEY (uid_Customer,
- product_uid,
+ uid_Rate,
  uid_Product)) ENGINE=InnoDB;
 
-ALTER TABLE Cart ADD CONSTRAINT FK_Cart_command_uid_command FOREIGN KEY (command_uid_command) REFERENCES Command (uid_Command);
-ALTER TABLE Command ADD CONSTRAINT FK_Command_cart_uid_cart FOREIGN KEY (cart_uid_cart) REFERENCES Cart (uid_Cart);
+DROP TABLE IF EXISTS e_Create ;
+CREATE TABLE e_Create (uid_Command BIGINT NOT NULL,
+uid_Cart INT,
+PRIMARY KEY (uid_Command)) ENGINE=InnoDB;
+
+ALTER TABLE Cart ADD CONSTRAINT FK_Cart_uid_Command FOREIGN KEY (uid_Command) REFERENCES Command (uid_Command);
+ALTER TABLE Command ADD CONSTRAINT FK_Command_uid_Cart FOREIGN KEY (uid_Cart) REFERENCES Cart (uid_Cart);
 ALTER TABLE Choose ADD CONSTRAINT FK_Choose_uid_Customer FOREIGN KEY (uid_Customer) REFERENCES User (uid_Customer);
 ALTER TABLE Choose ADD CONSTRAINT FK_Choose_uid_Product FOREIGN KEY (uid_Product) REFERENCES Product (uid_Product);
 ALTER TABLE Choose ADD CONSTRAINT FK_Choose_product_img_Photo FOREIGN KEY (product_img_Photo) REFERENCES Photo (product_img_Photo);
@@ -129,5 +137,7 @@ ALTER TABLE Fill ADD CONSTRAINT FK_Fill_credit_cardNB_Payment FOREIGN KEY (credi
 ALTER TABLE Fill ADD CONSTRAINT FK_Fill_uid_Command FOREIGN KEY (uid_Command) REFERENCES Command (uid_Command);
 ALTER TABLE Fill ADD CONSTRAINT FK_Fill_email_Address FOREIGN KEY (email_Address) REFERENCES Address (email_Address);
 ALTER TABLE e_Use ADD CONSTRAINT FK_e_Use_uid_Customer FOREIGN KEY (uid_Customer) REFERENCES User (uid_Customer);
-ALTER TABLE e_Use ADD CONSTRAINT FK_e_Use_product_uid FOREIGN KEY (product_uid) REFERENCES Rate (product_uid);
+ALTER TABLE e_Use ADD CONSTRAINT FK_e_Use_uid_Rate FOREIGN KEY (uid_Rate) REFERENCES Rate (uid_Rate);
 ALTER TABLE e_Use ADD CONSTRAINT FK_e_Use_uid_Product FOREIGN KEY (uid_Product) REFERENCES Product (uid_Product);
+ALTER TABLE e_Create ADD CONSTRAINT FK_e_Create_uid_Command FOREIGN KEY (uid_Command) REFERENCES Command (uid_Command);
+ALTER TABLE e_Create ADD CONSTRAINT FK_e_Create_uid_Cart FOREIGN KEY (uid_Cart) REFERENCES Cart (uid_Cart);
