@@ -82,10 +82,13 @@ for ($i=0; $i < 3; $i++) {
 
 // COMMAND Foreign key
 
+$sql = 'UPDATE command SET cart_uid_cart = (SELECT uid_cart FROM cart WHERE cart.command_uid_command = command.uid_Command)';
+$stmt = $db->prepare($sql);
 
 $insertedPKs = array();
 for ($i=1; $i <= 3; $i++) {
-
+$stmt->execute();
+$insertedPKs[]= $db->lastInsertId();
 // BOB
 /*    $sql = "SELECT command_uid_command FROM cart WHERE cart.uid_Cart = ?";
     $stmt = $db->prepare($sql);
@@ -101,21 +104,17 @@ for ($i=1; $i <= 3; $i++) {
     $stmt->bindValue(2, $carts[0]['command_uid_command'] ?? null );
     $stmt->execute();
     $insertedPKs[]= $db->lastInsertId();*/
-
-    $sql = 'UPDATE command SET cart_uid_cart = (SELECT uid_cart FROM cart WHERE cart.command_uid_command = command.uid_Command)';
-    $stmt = $db->prepare($sql);
-    $stmt->execute();
-    $insertedPKs[]= $db->lastInsertId();
 }
 
 
 // PAYMENT
-$sql = 'INSERT INTO payment (payment_method_Payment) VALUES (?)';
+$sql = 'INSERT INTO payment (credit_cardNB_Payment, credit_Card_Type_Payment) VALUES (?, ?)';
 $stmt = $db->prepare($sql);
 
 $insertedPKs = array();
 for ($i=0; $i < 3; $i++) {
-    $stmt->bindValue(1, $faker->creditCardType);
+    $stmt->bindValue(1, $faker->creditCardNumber);
+    $stmt->bindValue(2, $faker->creditCardType);
     $stmt->execute();
     $insertedPKs[]= $db->lastInsertId();
 }
@@ -132,16 +131,18 @@ for ($i=0; $i < 3; $i++) {
 }
 
 // RATE
-$sql = 'INSERT INTO rate (rating_Rate, review_Rate) VALUES (?, ?)';
+$sql = 'INSERT INTO rate (user_uid, rating_Rate, review_Rate) VALUES (?, ?, ?)';
 $stmt = $db->prepare($sql);
 
 $insertedPKs = array();
 for ($i=0; $i < 3; $i++) {
-    $stmt->bindValue(1, $faker->numberBetween(0, 5));
-    $stmt->bindValue(2, $faker->text(50));
+    $stmt->bindValue(1, $faker->numberBetween(1, 3));
+    $stmt->bindValue(2, $faker->numberBetween(0, 5));
+    $stmt->bindValue(3, $faker->text(50));
     $stmt->execute();
     $insertedPKs[]= $db->lastInsertId();
 }
+
 
 // PHOTO
 $sql = 'INSERT INTO photo (product_img_Photo, avatar_img_Photo) VALUES (?, ?)';

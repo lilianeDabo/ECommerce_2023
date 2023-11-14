@@ -44,8 +44,9 @@ cart_uid_cart INT,
 PRIMARY KEY (uid_Command)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Payment ;
-CREATE TABLE Payment (payment_method_Payment VARCHAR(255) NOT NULL,
-PRIMARY KEY (payment_method_Payment)) ENGINE=InnoDB;
+CREATE TABLE Payment (credit_cardNB_Payment BIGINT NOT NULL,
+credit_Card_Type_Payment VARCHAR(255) NOT NULL,
+PRIMARY KEY (credit_cardNB_Payment)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Invoices ;
 CREATE TABLE Invoices (history_Invoices VARCHAR(255) NOT NULL,
@@ -75,11 +76,11 @@ DROP TABLE IF EXISTS Own ;
 CREATE TABLE Own (uid_Customer INTEGER AUTO_INCREMENT NOT NULL,
 uid_Cart INT NOT NULL,
 email_Address VARCHAR(255) NOT NULL,
-payment_method_Payment VARCHAR(255) NOT NULL,
+credit_cardNB_Payment BIGINT NOT NULL,
 PRIMARY KEY (uid_Customer,
  uid_Cart,
  email_Address,
- payment_method_Payment)) ENGINE=InnoDB;
+ credit_cardNB_Payment)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Store ;
 CREATE TABLE Store (uid_Command BIGINT AUTO_INCREMENT NOT NULL,
@@ -88,10 +89,10 @@ PRIMARY KEY (uid_Command,
  history_Invoices)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Fill ;
-CREATE TABLE Fill (payment_method_Payment VARCHAR(255) NOT NULL,
+CREATE TABLE Fill (credit_cardNB_Payment BIGINT NOT NULL,
 uid_Command BIGINT NOT NULL,
 email_Address VARCHAR(255) NOT NULL,
-PRIMARY KEY (payment_method_Payment,
+PRIMARY KEY (credit_cardNB_Payment,
  uid_Command,
  email_Address)) ENGINE=InnoDB;
 
@@ -111,10 +112,10 @@ ALTER TABLE Choose ADD CONSTRAINT FK_Choose_product_img_Photo FOREIGN KEY (produ
 ALTER TABLE Own ADD CONSTRAINT FK_Own_uid_Customer FOREIGN KEY (uid_Customer) REFERENCES User (uid_Customer);
 ALTER TABLE Own ADD CONSTRAINT FK_Own_uid_Cart FOREIGN KEY (uid_Cart) REFERENCES Cart (uid_Cart);
 ALTER TABLE Own ADD CONSTRAINT FK_Own_email_Address FOREIGN KEY (email_Address) REFERENCES Address (email_Address);
-ALTER TABLE Own ADD CONSTRAINT FK_Own_payment_method_Payment FOREIGN KEY (payment_method_Payment) REFERENCES Payment (payment_method_Payment);
+ALTER TABLE Own ADD CONSTRAINT FK_Own_credit_cardNB_Payment FOREIGN KEY (credit_cardNB_Payment) REFERENCES Payment (credit_cardNB_Payment);
 ALTER TABLE Store ADD CONSTRAINT FK_Store_uid_Command FOREIGN KEY (uid_Command) REFERENCES Command (uid_Command);
 ALTER TABLE Store ADD CONSTRAINT FK_Store_history_Invoices FOREIGN KEY (history_Invoices) REFERENCES Invoices (history_Invoices);
-ALTER TABLE Fill ADD CONSTRAINT FK_Fill_payment_method_Payment FOREIGN KEY (payment_method_Payment) REFERENCES Payment (payment_method_Payment);
+ALTER TABLE Fill ADD CONSTRAINT FK_Fill_credit_cardNB_Payment FOREIGN KEY (credit_cardNB_Payment) REFERENCES Payment (credit_cardNB_Payment);
 ALTER TABLE Fill ADD CONSTRAINT FK_Fill_uid_Command FOREIGN KEY (uid_Command) REFERENCES Command (uid_Command);
 ALTER TABLE Fill ADD CONSTRAINT FK_Fill_email_Address FOREIGN KEY (email_Address) REFERENCES Address (email_Address);
 ALTER TABLE e_Use ADD CONSTRAINT FK_e_Use_uid_Customer FOREIGN KEY (uid_Customer) REFERENCES User (uid_Customer);
