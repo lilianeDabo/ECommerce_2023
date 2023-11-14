@@ -10,6 +10,15 @@ require_once('vendor/autoload.php');
 $faker = Faker\Factory::create();
 
 // TABLES HAVE 3 ELEMENTS MAX
+// encryption
+// Define the secret key
+$key = "ecommerce";
+
+// Define the encryption method
+$method = "AES-256-CBC";
+
+// Generate a random initialization vector (IV)
+$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($method));
 
 // E_USER
 $sql = 'INSERT INTO e_user (username_User, password_User, first_name_Customer, last_name_Customer, status_Customer) VALUES (?, ?, ?, ?, ?)';
@@ -18,9 +27,9 @@ $stmt = $db->prepare($sql);
 $insertedPKs = array();
 for ($i=0; $i < 3; $i++) {
     $stmt->bindValue(1, $faker->userName);
-    $stmt->bindValue(2, $faker->password);
+    $stmt->bindValue(2, openssl_encrypt($faker->password, $method, $key, 0, $iv ));
     $stmt->bindValue(3, $faker->firstName($gender = null));
-    $stmt->bindValue(4, $faker->lastName);
+    $stmt->bindValue(4, openssl_encrypt($faker->lastName, $method, $key, 0, $iv ));
     $stmt->bindValue(5, $faker->randomElement(['online', 'offline']));
     $stmt->execute();
     $insertedPKs[]= $db->lastInsertId();
@@ -46,9 +55,9 @@ $stmt = $db->prepare($sql);
 
 $insertedPKs = array();
 for ($i=0; $i < 3; $i++) {
-    $stmt->bindValue(1, $faker->freeEmail);
-    $stmt->bindValue(2, $faker->phoneNumber);
-    $stmt->bindValue(3, $faker->address);
+    $stmt->bindValue(1, openssl_encrypt($faker->freeEmail, $method, $key, 0, $iv ));
+    $stmt->bindValue(2, openssl_encrypt($faker->phoneNumber, $method, $key, 0, $iv ));
+    $stmt->bindValue(3, openssl_encrypt($faker->address, $method, $key, 0, $iv ));
     $stmt->bindValue(4, $faker->postcode);
     $stmt->bindValue(5, $faker->city);
     $stmt->execute();
@@ -113,8 +122,8 @@ $stmt = $db->prepare($sql);
 
 $insertedPKs = array();
 for ($i=0; $i < 3; $i++) {
-    $stmt->bindValue(1, $faker->creditCardNumber);
-    $stmt->bindValue(2, $faker->creditCardType);
+    $stmt->bindValue(1, openssl_encrypt($faker->creditCardNumber, $method, $key, 0, $iv ));
+    $stmt->bindValue(2, openssl_encrypt($faker->creditCardType, $method, $key, 0, $iv ));
     $stmt->execute();
     $insertedPKs[]= $db->lastInsertId();
 }
