@@ -81,16 +81,17 @@ for ($i=0; $i < 3; $i++) {
 }
 
 // COMMAND Foreign key
-
-$sql = 'UPDATE command SET cart_uid_cart = (SELECT uid_cart FROM cart WHERE cart.command_uid_command = command.uid_Command)';
+$sql = 'UPDATE command SET cart_uid_cart = (SELECT uid_cart FROM cart WHERE cart.command_uid_command = command.uid_Command LIMIT 1)';
 $stmt = $db->prepare($sql);
 
 $insertedPKs = array();
-for ($i=1; $i <= 3; $i++) {
 $stmt->execute();
 $insertedPKs[]= $db->lastInsertId();
+
 // BOB
-/*    $sql = "SELECT command_uid_command FROM cart WHERE cart.uid_Cart = ?";
+/*
+for ($i=0; $i < 3; $i++) {
+  $sql = "SELECT command_uid_command FROM cart WHERE cart.uid_Cart = ?";
     $stmt = $db->prepare($sql);
     $stmt->bindValue(1, $i );
     $stmt->execute();
@@ -103,9 +104,8 @@ $insertedPKs[]= $db->lastInsertId();
     $stmt->bindValue(1, $i );
     $stmt->bindValue(2, $carts[0]['command_uid_command'] ?? null );
     $stmt->execute();
-    $insertedPKs[]= $db->lastInsertId();*/
-}
-
+    $insertedPKs[]= $db->lastInsertId();
+}*/
 
 // PAYMENT
 $sql = 'INSERT INTO payment (credit_cardNB_Payment, credit_Card_Type_Payment) VALUES (?, ?)';
@@ -120,15 +120,33 @@ for ($i=0; $i < 3; $i++) {
 }
 
 // INVOICES
-$sql = 'INSERT INTO invoices (history_Invoices) VALUES (?)';
+$sql = 'INSERT INTO invoices (uid_Product, uid_Customer, quantity_Invoices) VALUES (?, ?, ?)';
 $stmt = $db->prepare($sql);
 
 $insertedPKs = array();
 for ($i=0; $i < 3; $i++) {
-    $stmt->bindValue(1, $faker->text(150));
+    $stmt->bindValue(1, $faker->numberBetween(1, 3));
+    $stmt->bindValue(2, $faker->numberBetween(1, 3));
+    $stmt->bindValue(3, $faker->randomNumber(1, true));
+
     $stmt->execute();
     $insertedPKs[]= $db->lastInsertId();
 }
+
+// INVOICES Foreign keys
+$sql = 'UPDATE invoices SET name_Product = (SELECT name_Product FROM product WHERE invoices.uid_Product = product.uid_Product)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+$stmt->execute();
+$insertedPKs[]= $db->lastInsertId();
+
+$sql = 'UPDATE invoices SET price_Product = (SELECT price_Product FROM product WHERE invoices.uid_Product = product.uid_Product)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+$stmt->execute();
+$insertedPKs[]= $db->lastInsertId();
 
 // RATE
 $sql = 'INSERT INTO rate (user_uid, rating_Rate, review_Rate) VALUES (?, ?, ?)';
@@ -159,26 +177,63 @@ for ($i=0; $i < 3; $i++) {
 // JUNCTION TABLES
 
 // CHOOSE
-/*$sql = 'INSERT INTO choose (uid_Product, product_img_Photo) VALUES (?, ?)';
-$stmt = $db->prepare($sql);
-
-$insertedPKs = array();
-for ($i=0; $i < 3; $i++) {
-    $stmt->bindValue(1, $faker->numberBetween(1, 3));
-    $stmt->bindValue(2, $faker->numberBetween(1, 3));
-    $stmt->execute();
-    $insertedPKs[]= $db->lastInsertId();
-}*/
-
-// OWN
-/*$sql = 'INSERT INTO own (uid_Cart, email_Address, payment_method_Payment) VALUES (?, ?, ?)';
+$sql = 'INSERT INTO choose (uid_Customer, uid_Product) VALUES (?, ?)';
 $stmt = $db->prepare($sql);
 
 $insertedPKs = array();
 for ($i=0; $i < 3; $i++) {
     $stmt->bindValue(1, $faker->unique()->numberBetween(1, 3));
     $stmt->bindValue(2, $faker->numberBetween(1, 3));
-    $stmt->bindValue(3, $faker->numberBetween(1, 3));
+
     $stmt->execute();
     $insertedPKs[]= $db->lastInsertId();
-}*/
+}
+
+
+// OWN
+$sql = 'INSERT INTO own (uid_Customer, uid_Cart) VALUES (?, ?)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+for ($i=1; $i <= 3; $i++) {
+    // Wanted to use a double unique number between 1 and 3 but unique doesn't reset right from the last function Choose
+    $stmt->bindValue(1, $i);
+    $stmt->bindValue(2, $i);
+
+    $stmt->execute();
+    $insertedPKs[]= $db->lastInsertId();
+}
+
+// OWN Foreign keys
+$sql = 'UPDATE own SET email_Address = (SELECT email_Address FROM address WHERE address.uid_Address = own.uid_Customer)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+$stmt->execute();
+$insertedPKs[]= $db->lastInsertId();
+
+$sql = 'UPDATE own SET credit_cardNB_Payment = (SELECT credit_cardNB_Payment FROM payment WHERE payment.uid_Payment = own.uid_Customer)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+$stmt->execute();
+$insertedPKs[]= $db->lastInsertId();
+
+// STORE
+$sql = 'INSERT INTO store (uid_Command) VALUES (?)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+for ($i=1; $i <= 3; $i++) {
+    $stmt->bindValue(1, $i);
+    $stmt->execute();
+    $insertedPKs[]= $db->lastInsertId();
+}
+
+// STORE Foreign keys
+$sql = 'UPDATE store SET uid_Invoices = (SELECT uid_Command FROM command WHERE command.uid_Command = store.uid_Command)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+$stmt->execute();
+$insertedPKs[]= $db->lastInsertId();
