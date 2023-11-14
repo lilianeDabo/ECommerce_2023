@@ -170,14 +170,6 @@ for ($i=1; $i <= 3; $i++) {
     $insertedPKs[]= $db->lastInsertId();
 }
 
-// E_USE Foreign keys
-$sql = 'UPDATE e_use SET uid_Product = (SELECT uid_Product FROM rate WHERE rate.uid_Customer = e_use.uid_Customer LIMIT 1)';
-$stmt = $db->prepare($sql);
-
-$insertedPKs = array();
-$stmt->execute();
-$insertedPKs[]= $db->lastInsertId();
-
 // RATE
 $sql = 'INSERT INTO rate (uid_Product, uid_Customer, rating_Rate, review_Rate) VALUES (?, ?, ?, ?)';
 $stmt = $db->prepare($sql);
@@ -191,6 +183,21 @@ for ($i=1; $i <= 3; $i++) {
     $stmt->execute();
     $insertedPKs[]= $db->lastInsertId();
 }
+
+// E_USE Foreign keys
+$sql = 'UPDATE e_use SET uid_Rate = (SELECT uid_Rate FROM rate WHERE rate.uid_Customer = e_use.uid_Customer LIMIT 1)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+$stmt->execute();
+$insertedPKs[]= $db->lastInsertId();
+
+$sql = 'UPDATE e_use SET uid_Product = (SELECT uid_Product FROM rate WHERE rate.uid_Customer = e_use.uid_Customer)';
+$stmt = $db->prepare($sql);
+
+$insertedPKs = array();
+$stmt->execute();
+$insertedPKs[]= $db->lastInsertId();
 
 // PHOTO
 $sql = 'INSERT INTO photo (product_img_Photo, avatar_img_Photo) VALUES (?, ?)';
@@ -218,7 +225,13 @@ for ($i=0; $i < 3; $i++) {
     $stmt->execute();
     $insertedPKs[]= $db->lastInsertId();
 }
+// CHOOSE Foreign keys
+$sql = 'UPDATE choose SET product_img_Photo	= (SELECT product_img_Photo FROM photo WHERE photo.uid_Photo = choose.uid_Product)';
+$stmt = $db->prepare($sql);
 
+$insertedPKs = array();
+$stmt->execute();
+$insertedPKs[]= $db->lastInsertId();
 
 // OWN
 $sql = 'INSERT INTO own (uid_Customer, uid_Cart) VALUES (?, ?)';

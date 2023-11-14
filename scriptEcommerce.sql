@@ -47,7 +47,7 @@ PRIMARY KEY (uid_Command)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Payment ;
 CREATE TABLE Payment (uid_Payment INT AUTO_INCREMENT NOT NULL,
-credit_cardNB_Payment BIGINT NOT NULL,
+credit_cardNB_Payment VARCHAR(255) NOT NULL,
 credit_Card_Type_Payment VARCHAR(255) NOT NULL,
 PRIMARY KEY (uid_Payment,
 credit_cardNB_Payment)) ENGINE=InnoDB;
@@ -73,9 +73,10 @@ uid_Product,
 uid_Customer)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Photo ;
-CREATE TABLE Photo (product_img_Photo VARCHAR(255) NOT NULL,
+CREATE TABLE Photo (uid_Photo INT AUTO_INCREMENT NOT NULL,
+product_img_Photo VARCHAR(255) NOT NULL,
 avatar_img_Photo TEXT,
-PRIMARY KEY (product_img_Photo)) ENGINE=InnoDB;
+PRIMARY KEY (uid_Photo, product_img_Photo)) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Choose ;
 CREATE TABLE Choose (uid_Customer INT AUTO_INCREMENT NOT NULL,
@@ -89,7 +90,7 @@ DROP TABLE IF EXISTS Own ;
 CREATE TABLE Own (uid_Customer INT AUTO_INCREMENT NOT NULL,
 uid_Cart INT NOT NULL,
 email_Address VARCHAR(255) NOT NULL,
-credit_cardNB_Payment BIGINT NOT NULL,
+credit_cardNB_Payment VARCHAR(255) NOT NULL,
 PRIMARY KEY (uid_Customer,
  uid_Cart,
  email_Address,
@@ -103,7 +104,7 @@ PRIMARY KEY (uid_Command,
 
 DROP TABLE IF EXISTS Fill ;
 CREATE TABLE Fill (uid_Command BIGINT NOT NULL,
-credit_cardNB_Payment BIGINT NOT NULL,
+credit_cardNB_Payment VARCHAR(255) NOT NULL,
 email_Address VARCHAR(255) NOT NULL,
 PRIMARY KEY (uid_Command,
  credit_cardNB_Payment,
